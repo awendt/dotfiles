@@ -20,5 +20,5 @@ windows:
       layout: main-vertical
       panes:
         - bundle exec foreman start web -p 3000
-        - vim
         - # empty, just plain bash
+        - spork
