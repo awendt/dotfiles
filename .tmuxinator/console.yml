@@ -1,7 +1,7 @@
 # ~/.tmuxinator/console.yml
 
 name: console
-root: ~/projekte/fiona7/cloud/tenant_management/tenant_management/
+root: ~/work/cloud/tenant_management/
 
 # Optional tmux socket
 # socket_name: foo

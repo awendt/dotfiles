@@ -1,7 +1,7 @@
 # ~/.tmuxinator/deployment.yml
 
 name: deployment
-root: ~/projekte/fiona7/deployment
+root: ~/work/deployment
 
 # Optional tmux socket
 # socket_name: foo
