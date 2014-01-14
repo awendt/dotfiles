@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+host_lines = `grep -e '^Host #{ARGV[1]}' ~/.ssh/config`.split("\n")
+puts host_lines.map{|line| line.chomp.split.last}
+exit 0
