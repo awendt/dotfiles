@@ -1,0 +1,42 @@
+[color]
+    status = auto
+    diff = auto
+    branch = auto
+    interactive = auto
+[alias]
+    di = diff --ignore-submodules
+    st = status --ignore-submodules
+    ci = commit
+    co = checkout
+    cob = checkout -b
+    sb = show-branch
+    unstaged = diff
+    staged = diff --cached
+    both = diff HEAD
+    oneline = log --pretty=oneline
+    who = shortlog -s -n
+    ismerged = branch --merged
+    nomerged = branch --no-merged
+    allstar = rebase -i
+    ba = branch -a
+    pullhere = branch -f pullme
+    cont = rebase --continue
+    mmerge = merge --no-ff
+    graph = log --graph --oneline
+    amend = commit --amend -v
+    sm = submodule update --init --recursive
+    lg = log --graph --decorate
+[core]
+    excludesfile = ~/.gitignore
+    editor = /usr/local/bin/subl -w -n
+[repack]
+    usedeltabaseoffset = true
+[svn]
+    findcopiesharder = 1
+    rmdir = 1
+[status]
+    submodulesummary = 0
+[advice]
+    implicitIdentity = true
+[include]
+    path = /Users/awendt/.gitconfig-sensitive
