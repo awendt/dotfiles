@@ -9,9 +9,7 @@ task :setup do
   
   top_level_dotfiles.each do |file|
     dotfile = File.expand_path("~/#{file}")
-    if File.exists?(dotfile)
-      puts "Symlink #{dotfile} already exists, skipping"
-    else
+    unless File.exists?(dotfile)
       puts "Creating symlink #{dotfile}"
       FileUtils.ln_s File.expand_path("../#{file}", __FILE__), dotfile
     end
