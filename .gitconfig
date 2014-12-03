@@ -39,4 +39,4 @@
 [advice]
     implicitIdentity = true
 [include]
-    path = /Users/awendt/.gitconfig-sensitive
+    path = /Users/andrewendt/.gitconfig-sensitive

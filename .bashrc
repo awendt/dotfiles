@@ -3,7 +3,11 @@ export PATH=$HOME/.rbenv/bin:/usr/local/bin:$PATH
 
 # git prompt
 GIT_PS1_SHOWDIRTYSTATE=true
-source `brew --prefix`/etc/bash_completion.d/git-prompt.sh
+if [ -f "$(brew --prefix bash-git-prompt)/share/gitprompt.sh" ]; then
+  GIT_PROMPT_THEME=Solarized
+  source "$(brew --prefix bash-git-prompt)/share/gitprompt.sh"
+fi
+
 export PS1='\[\033[0;34m\]\W$(__git_ps1 " (%s)") $\[\033[0m\] '
 
 # aliases
@@ -14,7 +18,9 @@ alias gitx='open /Users/awendt/Applications/GitX.app'
 
 # bash completions
 source $HOME/.bash_completion.d/brew_completer.sh
-source `brew --prefix`/etc/bash_completion.d/git-completion.bash
+if [ -f $(brew --prefix)/etc/bash_completion ]; then
+  . $(brew --prefix)/etc/bash_completion
+fi
 source $HOME/.bash_completion.d/poet.bash
 complete -C $HOME/.bash_completion.d/rake -o default rake
 complete -C $HOME/.bash_completion.d/ssh ssh
