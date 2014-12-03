@@ -17,7 +17,6 @@ alias script='echo "Did you mean /usr/bin/script ?"'
 alias gitx='open /Users/awendt/Applications/GitX.app'
 
 # bash completions
-source $HOME/.bash_completion.d/brew_completer.sh
 if [ -f $(brew --prefix)/etc/bash_completion ]; then
   . $(brew --prefix)/etc/bash_completion
 fi
