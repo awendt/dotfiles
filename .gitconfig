@@ -40,3 +40,5 @@
     implicitIdentity = true
 [include]
     path = /Users/andrewendt/.gitconfig-sensitive
+[user]
+    name = André Wendt
