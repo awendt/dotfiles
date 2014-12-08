@@ -14,7 +14,6 @@ export PS1='\[\033[0;34m\]\W$(__git_ps1 " (%s)") $\[\033[0m\] '
 alias mm='subl .'
 alias curl='curl -sS'
 alias script='echo "Did you mean /usr/bin/script ?"'
-alias gitx='open /Users/awendt/Applications/GitX.app'
 
 # bash completions
 if [ -f $(brew --prefix)/etc/bash_completion ]; then
