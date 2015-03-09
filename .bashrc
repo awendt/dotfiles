@@ -1,5 +1,5 @@
 export EDITOR=`which vim`
-export PATH=$HOME/.rbenv/bin:/usr/local/bin:$PATH
+export PATH=/usr/local/sbin:$HOME/.rbenv/bin:/usr/local/bin:$PATH
 
 # git prompt
 GIT_PS1_SHOWDIRTYSTATE=true
