@@ -1,0 +1,23 @@
+# ~/.tmuxinator/home.yml
+
+name: home
+root: ~/work/home.babbel/
+
+# Optional tmux socket
+# socket_name: foo
+
+# Runs before everything. Use it to start daemons etc.
+# pre: sudo /etc/rc.d/mysqld start
+
+# Runs in each window and pane before window/pane specific commands. Useful for setting up interpreter versions.
+# pre_window: rbenv shell --unset
+
+# Pass command line options to tmux. Useful for specifying a different tmux.conf.
+# tmux_options: -f ~/.tmux.mac.conf
+
+windows:
+  - home:
+      layout: main-vertical
+      panes:
+        - ssh -t developer@babbel.local 'cd /opt/home.babbel; $SHELL'
+        - clear # empty, just plain bash
