@@ -22,13 +22,14 @@
     pullhere = branch -f pullme
     cont = rebase --continue
     mmerge = merge --no-ff
-    graph = log --graph --oneline
+    graph = log --graph --oneline --decorate
     amend = commit --amend -v
     sm = submodule update --init --recursive
     lg = log --graph --decorate
 [core]
     excludesfile = ~/.gitignore
     editor = /usr/local/bin/subl -w -n
+    pager = /usr/local/share/git-core/contrib/diff-highlight/diff-highlight | less
 [repack]
     usedeltabaseoffset = true
 [svn]
