@@ -1,5 +1,6 @@
 export EDITOR=`which vim`
 export PATH=/usr/local/sbin:$HOME/.rbenv/bin:/usr/local/bin:$PATH
+export HOMEBREW_NO_ANALYTICS=1
 
 # git prompt
 GIT_PS1_SHOWDIRTYSTATE=true
