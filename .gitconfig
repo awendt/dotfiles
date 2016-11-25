@@ -3,6 +3,8 @@
     diff = auto
     branch = auto
     interactive = auto
+[interactive]
+    singlekey = true
 [alias]
     di = diff --ignore-submodules
     st = status --ignore-submodules
