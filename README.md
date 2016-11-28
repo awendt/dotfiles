@@ -13,7 +13,14 @@ This guide assumes you're running OSX.
    brew install stow
    ```
 
-2. To install Bash configuration files, just do:
+2. To install all configuration files at once, just do:
+
+   ```
+   cd ~/dotfiles
+   make
+   ```
+
+3. To selectively install configuration files (e.g. Bash), just do:
 
    ```
    cd ~/dotfiles
