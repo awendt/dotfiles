@@ -4,4 +4,4 @@
 #
 # cd .git/hooks; ln -s ~/dotfiles/scripts/rubocop-changes.sh pre-commit
 
-git diff --cached --name-only --diff-filter=AMR -- *.rb *.rake | xargs rubocop
+git diff --cached --name-only --diff-filter=AMR -- '*.rb' '*.rake' | xargs rubocop
