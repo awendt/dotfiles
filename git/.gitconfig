@@ -41,7 +41,9 @@
     submodulesummary = 0
 [advice]
     implicitIdentity = true
-[include]
-    path = /Users/andrewendt/.gitconfig-sensitive
+[includeIf "gitdir:~/work/"]
+    path = ~/.gitconfig-work
+[includeIf "gitdir:~/privat/"]
+    path = ~/.gitconfig-private
 [user]
     name = André Wendt
