@@ -1,0 +1,25 @@
+# This is a copy of the built-in default ignore file,
+# with one exception: unignore .gitignore
+
+# Comments and blank lines are allowed.
+
+RCS
+.+,v
+
+CVS
+\.\#.+       # CVS conflict files / emacs lock files
+\.cvsignore
+
+\.svn
+_darcs
+\.hg
+
+\.git
+# we remove \.gitignore here because we want to stow this file
+
+.+~          # emacs backup files
+\#.*\#       # emacs autosave files
+
+^/README.*
+^/LICENSE.*
+^/COPYING
