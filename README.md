@@ -1,7 +1,7 @@
 # Dotfiles
 
 These are the dotfiles I use.
-They are [managed with stow](https://taihen.org/managing-dotfiles-with-gnu-stow/).
+They are [managed with stow](http://web.archive.org/web/20171007000027/https://taihen.org/managing-dotfiles-with-gnu-stow/).
 
 ## Setup
 
