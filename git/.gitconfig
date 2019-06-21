@@ -28,6 +28,7 @@
     amend = commit --amend -v
     sm = submodule update --init --recursive
     lg = log --graph --decorate
+    fix-upstream = !git branch --set-upstream-to=origin/$(git rev-parse --abbrev-ref HEAD)
 [core]
     excludesfile = ~/.gitignore
     editor = /usr/local/bin/subl -w -n
