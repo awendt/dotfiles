@@ -6,8 +6,8 @@
 [interactive]
     singlekey = true
 [alias]
-    di = diff --ignore-submodules
-    st = status --ignore-submodules
+    di = diff
+    st = status
     ci = commit
     co = checkout
     cob = checkout -b
@@ -26,7 +26,6 @@
     mmerge = merge --no-ff
     graph = log --graph --oneline --decorate
     amend = commit --amend -v
-    sm = submodule update --init --recursive
     lg = log --graph --decorate
     fix-upstream = !git branch --set-upstream-to=origin/$(git rev-parse --abbrev-ref HEAD)
 [core]
