@@ -30,7 +30,6 @@
     fix-upstream = !git branch --set-upstream-to=origin/$(git rev-parse --abbrev-ref HEAD)
 [core]
     excludesfile = ~/.gitignore
-    editor = /usr/local/bin/subl -w -n
     pager = /usr/local/share/git-core/contrib/diff-highlight/diff-highlight | less
 [repack]
     usedeltabaseoffset = true
