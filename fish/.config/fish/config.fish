@@ -1,4 +1,4 @@
-set PATH $HOME/.rbenv/shims $PATH
+set PATH $HOME/.rbenv/shims $HOME/.bin $PATH
 
 alias unset 'set --erase'
 
