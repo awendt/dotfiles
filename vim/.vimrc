@@ -8,3 +8,7 @@ execute pathogen#infect()
 set background=light
 let g:solarized_diffmode="high"
 colorscheme solarized
+
+" Make search results appear in the middle of the screen
+nnoremap n nzz
+nnoremap N Nzz
