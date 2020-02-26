@@ -1,5 +1,8 @@
 set number
 set hlsearch
+set expandtab
+set shiftwidth=2
+set softtabstop=2
 syntax on
 au BufNewFile,BufRead */.ssh/config.d/*	setf sshconfig
 au FileType gitcommit execute "normal! g"  | startinsert
