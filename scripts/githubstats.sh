@@ -50,7 +50,7 @@ API_URL="https://api.github.com/issues?state=closed&filter=assigned&per_page=100
 
 ALL_PRS=`hub api "${API_URL}"`
 
-echo `echo ${ALL_PRS} | jq length` pull requests
+echo `echo ${ALL_PRS} | jq length` pull requests since ${MONDAY}
 
 echo ${ALL_PRS} | jq "
   map({title: .title, from: .user.login})
