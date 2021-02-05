@@ -1,6 +1,6 @@
 #!/bin/bash
 
-############################################################
+##############################################################
 # Script to count all pull requests that have been assigned
 # the authenticated user in the last week.
 #
@@ -26,13 +26,13 @@
 #
 # Don't forget to quote when dealing with weird usernames:
 #
-# $ githubstats.sh --filter awendt,"dependabot-preview[bot]"
+# $ githubstats.sh --filter 'awendt,"dependabot-preview[bot]"'
 # 4 pull requests:
 # {
 #   "awendt": 1,
 #   "dependabot-preview[bot]": 3
 # }
-############################################################
+##############################################################
 
 # By default, don't filter anything
 filter=. # jq's identity function
