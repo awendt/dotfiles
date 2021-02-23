@@ -41,12 +41,12 @@
     submodulesummary = 0
 [advice]
     implicitIdentity = true
+[user]
+    name = André Wendt
 [includeIf "gitdir:~/work/"]
     path = ~/.gitconfig-work
 [includeIf "gitdir:~/privat/"]
     path = ~/.gitconfig-private
-[user]
-    name = André Wendt
 [stash]
     showPatch = true
 [init]
