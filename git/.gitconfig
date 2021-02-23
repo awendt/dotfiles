@@ -49,3 +49,5 @@
     name = André Wendt
 [stash]
     showPatch = true
+[init]
+    defaultBranch = main
