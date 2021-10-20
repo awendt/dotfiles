@@ -57,7 +57,7 @@ done
 
 API_URL="https://api.github.com/issues?state=closed&filter=assigned&per_page=100&since=${since}"
 
-ALL_PRS=`hub api "${API_URL}"`
+ALL_PRS=`hub api --paginate "${API_URL}" | jq -s add`
 
 echo `echo ${ALL_PRS} | jq length` pull requests since ${since}
 
