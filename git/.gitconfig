@@ -30,6 +30,7 @@
     lg = log --graph --decorate
     fix-upstream = !git branch --set-upstream-to=origin/$(git rev-parse --abbrev-ref HEAD)
     recent = branch --sort=-committerdate --format="%(committerdate:relative)%09%(refname:short)"
+    backmerge = !git fetch origin && git merge origin/$1
 [core]
     excludesfile = ~/.gitignore
     pager = /usr/local/share/git-core/contrib/diff-highlight/diff-highlight | less
