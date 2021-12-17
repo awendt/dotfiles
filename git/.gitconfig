@@ -31,6 +31,7 @@
     fix-upstream = !git branch --set-upstream-to=origin/$(git rev-parse --abbrev-ref HEAD)
     recent = branch --sort=-committerdate --format="%(committerdate:relative)%09%(refname:short)"
     backmerge = "!git fetch origin && git merge --no-edit -m \"Merge branch '$1' into $(git branch --show-current)\" origin/$1"
+    root = rev-parse --show-toplevel
 [core]
     excludesfile = ~/.gitignore
     pager = /usr/local/share/git-core/contrib/diff-highlight/diff-highlight | less
