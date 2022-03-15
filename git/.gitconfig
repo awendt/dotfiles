@@ -32,6 +32,7 @@
     recent = branch --sort=-committerdate --format="%(committerdate:relative)%09%(refname:short)"
     backmerge = "!git fetch origin && git merge --no-edit -m \"Merge branch '$1' into $(git branch --show-current)\" origin/$1"
     root = rev-parse --show-toplevel
+    coi = !git branch --sort=-committerdate --format='%(refname:short)' | head -n 20 | fzf | xargs git co
 [core]
     excludesfile = ~/.gitignore
     pager = /usr/local/share/git-core/contrib/diff-highlight/diff-highlight | less
