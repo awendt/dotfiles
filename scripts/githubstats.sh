@@ -2,7 +2,7 @@
 
 ################################################################
 # Script to count all pull requests that have been assigned
-# the authenticated user in the last week (requires `hub`).
+# the authenticated user in the last week (requires GitHub CLI).
 #
 # Outputs # of PRs and a list of all Github users
 # that have created those PRs:
@@ -57,7 +57,7 @@ done
 
 API_URL="https://api.github.com/issues?state=closed&filter=assigned&per_page=100&since=${since}"
 
-ALL_PRS=`hub api --paginate "${API_URL}" | jq -s add`
+ALL_PRS=`gh api --paginate "${API_URL}" | jq -s add`
 
 echo `echo ${ALL_PRS} | jq length` pull requests since ${since}
 
