@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+#
+# Summary: Update all shared modules to given version
+#
+# Usage: {cmd} <sha1>
+
+VERSION=${1:? "Missing argument: <sha1>"}
+BIN_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+
+MODULES=$(ag --only-matching --nofilename 'shared.terraform.*zip' \
+  | awk '!/^$/' - \
+  | cut -c 59- \
+  | rev \
+  | cut -c 5- \
+  | rev)
+
+echo "Updating modules from shared.terraform to ${VERSION}…"
+
+for MODULE in ${MODULES}; do
+  echo "${MODULE}"
+  ${BIN_DIR}/update-shared-module ${MODULE} ${VERSION}
+done
