@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+#
+# Summary: List Dependabot PRs for the current repository
+
+gh pr list --author app/dependabot --json number,title,headRefName,state
