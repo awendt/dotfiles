@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+#
+# Summary: Bulk-review pull requests
+#
+# Usage: {cmd} <pull-numbers-or-urls>
+#
+# Takes a set of pull request numbers or pull request URLs
+# and shows their diff, asking for approval.
+#
+# To show review all Dependabot pull requests in bulk, pass:
+# (gh pr list --author app/dependabot --json number | jq 'map(.number) | .[]')
+
+PULL_REQUESTS=$@
+
+for PULL_REQUEST in ${PULL_REQUESTS}; do
+  echo ${PULL_REQUEST}
+  gh pr diff ${PULL_REQUEST}
+  read -p "Approve this? " confirm
+
+  if [ $confirm == "yes" ]; then
+    gh pr review ${PULL_REQUEST} --approve
+  else
+    echo "Skipping…"
+  fi
+done
