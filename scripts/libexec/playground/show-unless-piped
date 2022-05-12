@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+#
+# Summary: Show output unless output is piped
+#
+# Usage: {cmd} <foo>
+
+function show_unless_piped () {
+  if [ -t 1 ] ; then
+    # Output is a terminal and not piped so we can decorate the output with
+    # a helpful message (src: https://stackoverflow.com/a/911213/473467)
+    echo $1
+  fi
+}
+
+show_unless_piped "$@"
