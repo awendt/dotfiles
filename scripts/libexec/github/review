@@ -17,7 +17,7 @@ for PULL_REQUEST in ${PULL_REQUESTS}; do
   gh pr diff ${PULL_REQUEST}
   read -p "Approve this? " confirm
 
-  if [ $confirm == "yes" ]; then
+  if [ "${confirm}" == "yes" ]; then
     gh pr review ${PULL_REQUEST} --approve
   else
     echo "Skipping…"
