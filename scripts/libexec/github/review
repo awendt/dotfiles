@@ -8,7 +8,10 @@
 # and shows their diff, asking for approval.
 #
 # To show review all Dependabot pull requests in bulk, pass:
-# (gh pr list --author app/dependabot --json number | jq 'map(.number) | .[]')
+# (gh pr list --author app/dependabot --json number | jq -r 'map(.number) | .[]')
+
+BASH_OPTS="-eo pipefail ${DEBUG+-x}"
+set ${BASH_OPTS}
 
 PULL_REQUESTS=$@
 
