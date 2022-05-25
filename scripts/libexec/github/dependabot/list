@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+#
+# Summary: List Dependabot PRs assigned to me
+#
+# Usage: {cmd} [--local]
+#
+#  --local Shows Dependabot PRs only for the current repo
+#
+# By default, it outputs all Dependabot PRs for all repos.
+
+if [ "$1" == "--local" ]; then
+  gh pr list --author app/dependabot --assignee @me --json url,title,headRefName,state
+else
+  gh search prs --assignee @me --app dependabot --state open --json url,title,state
+fi

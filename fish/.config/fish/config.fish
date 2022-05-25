@@ -2,6 +2,7 @@ set PATH $HOME/.rbenv/shims $HOME/.bin $PATH
 
 alias unset 'set --erase'
 alias cat='bat --theme="Solarized (light)"'
+alias sd='~/dotfiles/scripts/bin/sd'
 
 status --is-interactive; and source (rbenv init -|psub)
 

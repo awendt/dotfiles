@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+#
+# Summary: Update all references to a published module
+#
+# Usage: {cmd} <published-module> <version>
+#
+# All references in the current working directory (including all subdirs)
+# are updated to the given version, e.g.
+#
+#   {cmd} babbel/secretsmanager-for-rollbar-access-tokens/aws 1.1.0
+
+MODULE=$1
+
+TARGET_VERSION=${2:? "Usage: $0 published/module version"}
+
+for FILE in $(ag --files-with-matches 'module "'); do
+  awk -v module_name="\"${MODULE}\"" -v new_version="\"${2}\"" '
+    $1 == "module" {
+      INSIDE_MODULE = 1
+    }
+    $1 == "source" && $3 == module_name {
+      FOUND = 1
+    }
+    $1 == "version" && FOUND == 1 {
+      printf "  version = %s\n", new_version
+      next
+    }
+    /^\}$/ && INSIDE_MODULE == 1 {
+      INSIDE_MODULE = 0
+    }
+    {
+      print
+    }
+  ' $FILE > $FILE.new
+
+  mv $FILE.new $FILE
+done

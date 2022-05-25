@@ -1,0 +1,94 @@
+#!/usr/bin/env ruby
+#
+# Summary: Find the ECS task and run a command in in via ECS Exec
+#
+# Usage: {cmd} --cluster NAME --service NAME --command COMMAND
+#
+# Don't forget to set AWS_PROFILE!
+
+require "optparse"
+require "aws-sdk-ecs"
+
+class Exec
+  attr_accessor :client, :options
+
+  def initialize(args)
+    @options = {}
+    opt_parse = OptionParser.new do |opts|
+      opts.banner = "Usage: #{Process.argv0} [options]"
+
+      opts.on("--cluster NAME", "Name of the cluster") do |name|
+        @options[:cluster] = name
+      end
+
+      opts.on("--service NAME", "Name of the service within the cluster") do |name|
+        @options[:service] = name
+      end
+
+      opts.on("--command COMMAND", "Command to run remotely") do |command|
+        @options[:command] = command
+      end
+
+    end
+    opt_parse.parse!
+
+    check_options(opt_parse)
+  end
+
+  def run!
+    task_arns = list_task_arns
+
+    puts "Found #{task_arns.count} task(s):"
+    puts task_arns.map { |arn| "* #{arn}" }.join("\n")
+
+    task_arn = task_arns.first
+
+    puts "Picking #{task_arn} for you"
+
+    tasks = describe_tasks(task_arn)
+    containers = tasks.flat_map { |task| task.containers.map(&:name) }
+
+    container = choose(containers, "container")
+
+    puts "Running command in #{container}"
+
+    Kernel.exec("aws ecs execute-command --cluster #{options[:cluster]} --task #{task_arns.first} --container #{container} --command '#{options[:command]}' --interactive")
+  end
+
+  private
+
+  def client
+    @client ||= Aws::ECS::Client.new
+  end
+
+  def check_options(parser)
+    abort(parser.help) unless options.key?(:cluster) && options.key?(:service) && options.key?(:command)
+  end
+
+  def list_task_arns
+    client.list_tasks(cluster: options[:cluster], service_name: options[:service]).task_arns
+  end
+
+  def describe_tasks(arn)
+    client.describe_tasks(cluster: options[:cluster], tasks: [arn]).tasks
+  end
+
+  def choose(list, name_of_thing)
+    if list.count > 1
+      puts "Found #{list.count} #{name_of_thing}s:"
+      list.each_with_index do |item, index|
+        puts "#{index+1} #{item}"
+      end
+      print "Choose a #{name_of_thing}: "
+      choice = gets.strip
+      list[choice.to_i-1]
+    else
+      puts "Found 1 #{name_of_thing}:"
+      puts list.map { |item| "* #{name_of_thing}" }.join("\n")
+      list.first
+    end
+  end
+
+end
+
+Exec.new(ARGV).run!

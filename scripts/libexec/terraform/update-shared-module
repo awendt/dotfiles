@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+#
+# Summary: Update all references to a shared.terraform module
+#
+# Usage: {cmd} <shared-module> <sha1>
+#
+# All references in the current working directory (including all subdirs)
+# are updated to the given SHA1, e.g.
+#
+#   {cmd} apigateway/deploy 5645afc7d12522adef2aa2e9602400c14944bc35
+
+SHARED_MODULE=$1
+
+TARGET_VERSION=${2:? "Usage: $0 shared/module SHA1"}
+
+# SHARED_MODULE_PATH=${SHARED_MODULE%/*}
+# SHARED_MODULE_NAME=${SHARED_MODULE##*/}
+
+ag --files-with-matches "\/[0-9a-f]{40}\/${SHARED_MODULE//\//\\/}" | xargs sed -i "" "/shared.terraform\/[0-9a-f]\{40\}\/${SHARED_MODULE//\//\\/}/s/[0-9a-f]\{40\}/${TARGET_VERSION}/"
+
+# git-add does not work when using in a piped script so we check if STDIN is a terminal
+if [ -t 0 ] ; then
+  git add -p
+fi
