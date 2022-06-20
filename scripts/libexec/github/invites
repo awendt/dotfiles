@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+#
+# Summary: List pending invites
+#
+# Usage: {cmd} ORG
+
+BASH_OPTS="-eo pipefail ${DEBUG+-x}"
+set ${BASH_OPTS}
+
+gh api /orgs/$1/invitations | jq 'map({login, created_at})'
