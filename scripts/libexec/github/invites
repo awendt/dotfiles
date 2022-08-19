@@ -2,9 +2,16 @@
 #
 # Summary: List pending invites
 #
-# Usage: {cmd} ORG
+# Usage: {cmd} [ORG]
 
 BASH_OPTS="-eo pipefail ${DEBUG+-x}"
 set ${BASH_OPTS}
 
-gh api /orgs/$1/invitations | jq 'map({login, created_at})'
+if [ "$#" -gt 0 ]; then
+  gh api /orgs/$1/invitations | jq 'map({login, created_at})'
+else
+  ORGS=$(gh api /user/orgs | jq -r 'map(.login) | .[]')
+  for ORG in ${ORGS}; do
+    gh api /orgs/${ORG}/invitations | jq --arg org ${ORG} '{ ($org) : map({login, created_at}) }'
+  done | jq -s add
+fi
