@@ -1,6 +1,12 @@
 export EDITOR=`which vim`
 export PATH=/usr/local/sbin:$HOME/.rbenv/bin:/usr/local/bin:$PATH
 export HOMEBREW_NO_ANALYTICS=1
+export HOMEBREW_PREFIX="/opt/homebrew";
+export HOMEBREW_CELLAR="/opt/homebrew/Cellar";
+export HOMEBREW_REPOSITORY="/opt/homebrew";
+export PATH="/opt/homebrew/bin:/opt/homebrew/sbin${PATH+:$PATH}";
+export MANPATH="/opt/homebrew/share/man${MANPATH+:$MANPATH}:";
+export INFOPATH="/opt/homebrew/share/info:${INFOPATH:-}";
 
 # git prompt
 GIT_PS1_SHOWDIRTYSTATE=true
