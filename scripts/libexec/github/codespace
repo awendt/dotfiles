@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+#
+# Summary: Create CodeSpace in current repo and SSH into it
+#
+# Usage: {cmd} [pull-request-url]
+
+BASH_OPTS="-eo pipefail ${DEBUG+-x}"
+set ${BASH_OPTS}
+
+PULL_REQUEST_URL=$1
+REPOSITORY=$(gh pr view --json headRepository --jq '.headRepository.name' ${PULL_REQUEST_URL})
+
+WORKDIR=~/work/${REPOSITORY}
+
+echo "Going to ${WORKDIR}"
+
+cd ${WORKDIR}
+gh pr checkout ${PULL_REQUEST_URL}
+
+CURRENT_REPO=$(gh repo view --json nameWithOwner -q ".nameWithOwner")
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref head)
+
+echo "Creating CodeSpace in ${CURRENT_REPO} on branch ${CURRENT_BRANCH}"
+
+NEW_CODESPACE=$(gh cs create \
+  --devcontainer-path .devcontainer/devcontainer.json \
+  --repo ${CURRENT_REPO} \
+  --branch ${CURRENT_BRANCH} \
+  --machine standardLinux32gb)
+
+gh cs ssh --codespace ${NEW_CODESPACE}
