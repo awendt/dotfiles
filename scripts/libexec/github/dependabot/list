@@ -11,5 +11,5 @@
 if [ "$1" == "--local" ]; then
   gh pr list --author app/dependabot --assignee @me --json url,title,headRefName,state
 else
-  gh search prs --assignee @me --app dependabot --state open --json url,title,state
+  gh search prs --assignee @me --app dependabot --state open --review none --json url,title,state
 fi
