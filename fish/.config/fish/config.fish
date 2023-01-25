@@ -1,5 +1,4 @@
 set PATH /opt/homebrew/bin /opt/homebrew/sbin $HOME/.rbenv/shims $HOME/.bin $PATH
-set MANPATH /opt/homebrew/share/man $MANPATH
 set INFOPATH /opt/homebrew/share/info $INFOPATH
 set HOMEBREW_PREFIX /opt/homebrew
 set HOMEBREW_CELLAR /opt/homebrew/Cellar
