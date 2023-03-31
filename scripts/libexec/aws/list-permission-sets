@@ -1,0 +1,14 @@
+#!/bin/bash
+#
+# Summary: List all permission sets.
+#
+# Usage: {cmd}
+
+INSTANCE_ARN=$(aws sso-admin list-instances | jq -r '.Instances[0].InstanceArn')
+
+aws sso-admin list-permission-sets --instance-arn ${INSTANCE_ARN} \
+  | jq -r '.PermissionSets | .[]' \
+  | parallel aws sso-admin describe-permission-set --instance-arn $INSTANCE_ARN --permission-set-arn \
+  | jq -s -r 'map("\(.PermissionSet.Name)|\(.PermissionSet.PermissionSetArn)")[]' \
+  | column -t -s '|' \
+  | fzf
