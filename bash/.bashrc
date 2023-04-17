@@ -49,3 +49,5 @@ function foreman {
 # rbenv-specific
 export RBENV_ROOT=/usr/local/var/rbenv
 if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
+
+source /Users/andrewendt/.docker/init-bash.sh || true # Added by Docker Desktop

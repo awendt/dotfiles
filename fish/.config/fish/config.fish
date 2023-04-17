@@ -19,3 +19,5 @@ set -gx RUBY_CONFIGURE_OPTS "--with-openssl-dir=$OPENSSL_DIR"
 set -gx GEMRC $HOME/.gemrc.local
 
 ulimit -n 1024
+
+source /Users/andrewendt/.docker/init-fish.sh || true # Added by Docker Desktop
