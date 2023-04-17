@@ -8,6 +8,11 @@ BASH_OPTS="-eo pipefail ${DEBUG+-x}"
 set ${BASH_OPTS}
 
 PULL_REQUEST_URL=$1
+
+if [ -z "${PULL_REQUEST_URL}" ]; then
+  read -p "Pull request URL for which you'd like to set up a codespace: " PULL_REQUEST_URL
+fi
+
 REPOSITORY=$(gh pr view --json headRepository --jq '.headRepository.name' ${PULL_REQUEST_URL})
 
 WORKDIR=~/work/${REPOSITORY}
