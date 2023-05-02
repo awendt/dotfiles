@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+#
+# Summary: Query Overpass API
+#
+# Usage: echo 'bla' | {cmd}
+
+BASH_OPTS="-eo pipefail ${DEBUG+-x}"
+set ${BASH_OPTS}
+
+curl -q -H 'Content-Type: application/x-www-form-urlencoded; charset=utf-8' --data @- https://overpass-api.de/api/interpreter
