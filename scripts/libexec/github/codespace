@@ -27,10 +27,16 @@ CURRENT_BRANCH=$(git rev-parse --abbrev-ref head)
 
 echo "Creating CodeSpace in ${CURRENT_REPO} on branch ${CURRENT_BRANCH}"
 
+SMALLEST_AVAILABLE_CODESPACE=$(gh api \
+    -H "Accept: application/vnd.github+json" \
+    -H "X-GitHub-Api-Version: 2022-11-28" \
+    /repos/{owner}/{repo}/codespaces/machines \
+  | jq -r '.machines | sort_by(.memory_in_bytes)[0].name')
+
 NEW_CODESPACE=$(gh cs create \
   --devcontainer-path .devcontainer/devcontainer.json \
   --repo ${CURRENT_REPO} \
   --branch ${CURRENT_BRANCH} \
-  --machine standardLinux32gb)
+  --machine ${SMALLEST_AVAILABLE_CODESPACE})
 
 gh cs ssh --codespace ${NEW_CODESPACE}
