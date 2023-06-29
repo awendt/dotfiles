@@ -6,12 +6,11 @@ set HOMEBREW_CELLAR /opt/homebrew/Cellar
 alias unset 'set --erase'
 alias cat='bat --theme="Solarized (light)"'
 alias sd='~/dotfiles/scripts/bin/sd'
+alias node18='/usr/local/opt/node@18/bin/node'
 
 status --is-interactive; and source (rbenv init -|psub)
 
 set -gx LANG en_US.UTF-8
-set -g fish_user_paths "/usr/local/opt/node@14/bin" $fish_user_paths
-set -g fish_user_paths "/usr/local/opt/curl/bin" $fish_user_paths
 
 # specific to Ruby
 set -gx OPENSSL_DIR (brew --prefix openssl)
