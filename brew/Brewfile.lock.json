@@ -12,6 +12,9 @@
       },
       "juanibiapina/taps": {
         "revision": "d5dd635629586ddb78a552adeb1a03935ef180f9"
+      },
+      "jez/formulae": {
+        "revision": "3f1acdf9d9cdf0d8f5bddd5eded6a13f33ff5bd5"
       }
     },
     "brew": {
@@ -2140,6 +2143,14 @@
             }
           }
         }
+      },
+      "pandoc-sidenote": {
+        "version": "0.23.0",
+        "bottle": false
+      },
+      "jez/formulae/pandoc-sidenote": {
+        "version": "0.23.0",
+        "bottle": false
       }
     },
     "cask": {
