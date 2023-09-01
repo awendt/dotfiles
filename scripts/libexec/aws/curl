@@ -1,0 +1,42 @@
+#!/bin/bash
+#
+# Summary: Make an API call to AWS API Gateway
+#
+# Usage: {cmd} --credential-file FILE --endpoint ENDPOINT -X METHOD
+#
+# This script is useful for making an API request to AWS API Gateway.
+# The given credential file is expected to be in the format of RoleCredentials:
+# https://docs.aws.amazon.com/singlesignon/latest/PortalAPIReference/API_GetRoleCredentials.html
+
+BASH_OPTS="-eo pipefail ${DEBUG+-x}"
+set ${BASH_OPTS}
+
+while [[ "$#" -gt 0 ]]; do
+  case $1 in
+    --credential-file) credential_file=$2; shift ;;
+    --endpoint) endpoint=$2; shift ;;
+    -X) method=$2; shift ;;
+    *) echo "Unknown parameter passed: $1"; exit 1 ;;
+  esac
+  shift
+done
+
+if [ -z "${credential_file}" ]; then
+  echo "Please specify a credential file using: --credential-file FILE"
+  exit 1
+fi
+
+if [ -z "${endpoint}" ]; then
+  echo "Please specify an endpoint using: --endpoint ENDPOINT"
+  exit 1
+fi
+
+IFS='.' read -ra URL <<< "${endpoint}"
+region="${URL[2]}"
+
+curl -v \
+  -X ${method:-POST} \
+  --aws-sigv4 "aws:amz:${region}:execute-api" \
+  --user "$(cat ${credential_file} | jq -r .roleCredentials.accessKeyId):$(cat ${credential_file} | jq -r .roleCredentials.secretAccessKey)" \
+  --header "X-Amz-Security-Token: $(cat ${credential_file} | jq -r .roleCredentials.sessionToken)" \
+  ${endpoint}
