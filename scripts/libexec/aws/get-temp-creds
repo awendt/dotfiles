@@ -10,9 +10,6 @@
 #
 # The output is a JSON that can be piped to local file to use further.
 
-# Default role name
-role_name="fullaccess"
-
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     --profile) profile=$2; shift ;;
@@ -29,7 +26,7 @@ region=$(cat ${latest_cache_file} | jq -r '.region')
 
 aws sso get-role-credentials \
   --profile ${profile} \
-  --role-name ${role_name} \
+  --role-name ${role_name:-fullaccess} \
   --account-id ${account_id} \
   --access-token "${access_token}" \
   --region ${region}
