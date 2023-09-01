@@ -19,6 +19,11 @@ while [[ "$#" -gt 0 ]]; do
   shift
 done
 
+if [ -z "${profile}" ]; then
+  echo "Please specify a profile using: --profile PROFILE"
+  exit 1
+fi
+
 account_id=$(aws configure get profile.${profile}.sso_account_id)
 latest_cache_file=$(ls -t1 ~/.aws/sso/cache/*.json | head -n 1)
 access_token=$(cat ${latest_cache_file} | jq -r '.accessToken')
