@@ -1,0 +1,35 @@
+#!/bin/bash
+#
+# Summary: Gets temporary credentials
+#
+# Usage: {cmd} --profile PROFILE [--role-name ROLE_NAME]
+#
+# This script is useful for fetching temporary credentials for a role via AWS SSO.
+# The access token and region is taken from the latest cache file in
+# ~/.aws/sso/cache.
+#
+# The output is a JSON that can be piped to local file to use further.
+
+# Default role name
+role_name="fullaccess"
+
+while [[ "$#" -gt 0 ]]; do
+  case $1 in
+    --profile) profile=$2; shift ;;
+    --role-name) role_name=$2; shift ;;
+    *) echo "Unknown parameter passed: $1"; exit 1 ;;
+  esac
+  shift
+done
+
+account_id=$(aws configure get profile.${profile}.sso_account_id)
+latest_cache_file=$(ls -t1 ~/.aws/sso/cache/*.json | head -n 1)
+access_token=$(cat ${latest_cache_file} | jq -r '.accessToken')
+region=$(cat ${latest_cache_file} | jq -r '.region')
+
+aws sso get-role-credentials \
+  --profile ${profile} \
+  --role-name ${role_name} \
+  --account-id ${account_id} \
+  --access-token "${access_token}" \
+  --region ${region}
