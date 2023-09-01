@@ -2,7 +2,7 @@
 #
 # Summary: Make an API call to AWS API Gateway
 #
-# Usage: {cmd} --credential-file FILE --endpoint ENDPOINT -X METHOD
+# Usage: {cmd} --credential-file FILE --endpoint ENDPOINT [ -X METHOD ]
 #
 # This script is useful for making an API request to AWS API Gateway.
 # The given credential file is expected to be in the format of RoleCredentials:
