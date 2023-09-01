@@ -34,7 +34,7 @@ fi
 IFS='.' read -ra URL <<< "${endpoint}"
 region="${URL[2]}"
 
-curl -v \
+curl ${DEBUG+-v} \
   -X ${method:-POST} \
   --aws-sigv4 "aws:amz:${region}:execute-api" \
   --user "$(cat ${credential_file} | jq -r .roleCredentials.accessKeyId):$(cat ${credential_file} | jq -r .roleCredentials.secretAccessKey)" \
