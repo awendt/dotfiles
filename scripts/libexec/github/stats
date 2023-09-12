@@ -58,7 +58,7 @@ done
 
 API_URL="https://api.github.com/issues?state=closed&filter=assigned&per_page=100&since=${since}"
 
-ALL_PRS=`gh api --paginate "${API_URL}" | jq -s add`
+ALL_PRS=`gh api --paginate "${API_URL}" | jq -s "add | map(select(.pull_request.merged_at != null))"`
 
 echo `echo ${ALL_PRS} | jq length` pull requests since ${since}
 
