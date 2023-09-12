@@ -2,7 +2,7 @@
 #
 # Summary: Make an API call to AWS API Gateway
 #
-# Usage: {cmd} --credential-file FILE --endpoint ENDPOINT [ -X METHOD ]
+# Usage: {cmd} --credential-file FILE --endpoint ENDPOINT [ -X METHOD ] [ --json JSON ]
 #
 # This script is useful for making an API request to AWS API Gateway.
 # The given credential file is expected to be in the format of RoleCredentials:
@@ -15,6 +15,7 @@ while [[ "$#" -gt 0 ]]; do
   case $1 in
     --credential-file) credential_file=$2; shift ;;
     --endpoint) endpoint=$2; shift ;;
+    --json) json=$2; shift ;;
     -X) method=$2; shift ;;
     *) echo "Unknown parameter passed: $1"; exit 1 ;;
   esac
@@ -39,4 +40,5 @@ curl ${DEBUG+-v} \
   --aws-sigv4 "aws:amz:${region}:execute-api" \
   --user "$(cat ${credential_file} | jq -r .roleCredentials.accessKeyId):$(cat ${credential_file} | jq -r .roleCredentials.secretAccessKey)" \
   --header "X-Amz-Security-Token: $(cat ${credential_file} | jq -r .roleCredentials.sessionToken)" \
+  ${json/#/--json } \
   ${endpoint}
