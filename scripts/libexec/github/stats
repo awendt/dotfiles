@@ -56,14 +56,12 @@ while [[ "$#" -gt 0 ]]; do
   shift
 done
 
-API_URL="https://api.github.com/issues?state=closed&filter=assigned&per_page=100&since=${since}"
-
-ALL_PRS=`gh api --paginate "${API_URL}" | jq -s "add | map(select(.pull_request.merged_at != null))"`
+ALL_PRS=`gh search prs is:pr --owner ${GITHUB_EMPLOYER_ORGS} --merged --assignee @me --limit=100 --merged-at ">${since}" --json repository,url,title,author`
 
 echo `echo ${ALL_PRS} | jq length` pull requests since ${since}
 
 echo ${ALL_PRS} | jq "
-  map({title: .title, from: .user.login})
+  map({title: .title, from: .author.login})
   | group_by(.from)
   | map({ key: .[0].from, value: length })
   | from_entries
