@@ -1,0 +1,30 @@
+#!/bin/bash
+#
+# Summary: Find out more infos about Lambda deployments
+#
+# Usage: {cmd} [ --repository REPO ] [ --environment ENV ] [ --interval INTERVAL ]
+
+BASH_OPTS="-eo pipefail ${DEBUG+-x}"
+set ${BASH_OPTS}
+
+while [[ "$#" -gt 0 ]]; do
+  case $1 in
+    --environment) environment=$2; shift ;;
+    --interval) interval=$2; shift ;;
+    --repository) repository=$2; shift ;;
+    *) echo "Unknown parameter passed: $1"; exit 1 ;;
+  esac
+  shift
+done
+
+TAG_FILTERS=$(jq -nc --arg repository $repository --arg environment $environment '[{Key: "repository", Values: [$repository]}, {Key: "env", Values: [$environment]}]')
+
+while true; do
+  aws resourcegroupstaggingapi get-resources --resource-type-filters lambda --tag-filters ${TAG_FILTERS} \
+    | jq -r '.ResourceTagMappingList | map(.ResourceARN) | .[]' \
+    | xargs -P 10 -I {} aws lambda get-alias --function-name {} --name deployed \
+    | jq -s -r 'map([(.AliasArn | split(":") | .[6]), "v\(.FunctionVersion)", (.RoutingConfig.AdditionalVersionWeights // {} | to_entries | map("v\(.key)=\(.value)"))] | flatten) | ["Function", "Version", "Additional Version Weights"], (.[]) | @tsv' \
+    | sort \
+    | column -ts $'\t'
+    sleep ${interval-20}
+done
