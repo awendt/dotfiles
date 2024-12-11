@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+#
+# Summary: TBD
+#
+# Usage: {cmd} [pull-request-url]
+
+BASH_OPTS="-eo pipefail ${DEBUG+-x}"
+set ${BASH_OPTS}
+
+PULL_REQUEST_URL=$1
+
+WORKFLOW=terraform-apply-all.yml
+
+# gh pr list --assignee=@me --json number,title,headRefName,updatedAt --template \
+#   '{{range .}}{{tablerow .number .title .headRefName (timeago .updatedAt)}}{{end}}' \
+#   | fzf \
+#   | awk '{print $1}'
+
+if [ -z "${PULL_REQUEST_URL}" ]; then
+  read -p "Pull request URL for which you'd like to see the plan: " PULL_REQUEST_URL
+fi
+REPOSITORY=$(gh pr view --json headRepository --jq '.headRepository.name' ${PULL_REQUEST_URL})
+
+INFO=$(gh pr view ${PULL_REQUEST_URL} --json headRefName,headRepository,headRepositoryOwner,number --jq '{number, repository: .headRepository.name, owner: .headRepositoryOwner.login, branch: .headRefName, repositoryWithOwner: "\(.headRepositoryOwner.login)/\(.headRepository.name)"}')
+BRANCH=$(echo ${INFO} | jq -r .branch)
+REPO=$(echo ${INFO} | jq -r .repositoryWithOwner)
+
+echo We\'re talking about branch: ${BRANCH} in repo ${REPO}
+
+WORKDIR=~/work/${REPOSITORY}
+
+echo "Going to ${WORKDIR}"
+
+cd ${WORKDIR}
+gh pr checkout ${PULL_REQUEST_URL}
+
+#################
+# Trigger a plan
+#################
+# Fetch projects for this PR:
+PR_NUMBER=$(echo ${INFO} | jq -r .number)
+OWNER=$(echo ${INFO} | jq -r .owner)
+REPO_WITHOUT_OWNER=$(echo ${INFO} | jq -r .repository)
+
+echo Choose a module to apply:
+
+MODULE_TO_APPLY=$(gh api graphql --paginate -F name="${REPO_WITHOUT_OWNER}" -F owner="${OWNER}" -F number="${PR_NUMBER}" -f query='
+query($number: Int!, $name: String!, $owner: String!, $endCursor: String) {
+  repository(owner: $owner, name: $name) {
+    pullRequest(number: $number) {
+      projectsV2(first: 100, after: $endCursor) {
+        nodes {
+          id
+          number
+          title
+        }
+      }
+    }
+  }
+}' \
+| jq -r '.data.repository.pullRequest.projectsV2.nodes | map(.title) | .[]' \
+| sort \
+| fzf --height ~20% --select-1)
+
+echo $MODULE_TO_APPLY
+
+# ENV_TO_APPLY=$(cat .github/workflows/${WORKFLOW} \
+# | yq -r '.on.workflow_dispatch.inputs.environment.options | .[]' \
+# | fzf --height ~20% --select-1)
+
+# echo $ENV_TO_APPLY
+
+gh workflow run ${WORKFLOW} --repo ${REPO} --ref ${BRANCH} -f module=${MODULE_TO_APPLY} # -f environment=${ENV_TO_APPLY}
+
+gh run list --repo ${REPO} --workflow=${WORKFLOW} --branch ${BRANCH}
