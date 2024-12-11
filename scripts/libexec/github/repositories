@@ -23,4 +23,5 @@ gh search repos \
   --json fullName \
   --archived=${ARCHIVED-false} \
   infrastructure \
-| jq -r 'map(.fullName) | .[]'
+| jq -r 'map(.fullName) | .[]' \
+| sort
