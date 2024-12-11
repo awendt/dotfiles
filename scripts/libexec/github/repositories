@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+#
+# Summary: List relevant repositories
+#
+# Usage: {cmd}
+
+BASH_OPTS="-eo pipefail ${DEBUG+-x}"
+set ${BASH_OPTS}
+
+gh search repos \
+  --owner $GITHUB_EMPLOYER_ORGS \
+  --topic terraform --topic infrastructure \
+  --match name \
+  --limit 100 \
+  --json fullName \
+  --archived=false \
+  infrastructure \
+| jq -r 'map(.fullName) | .[]'
