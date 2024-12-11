@@ -9,13 +9,6 @@ set ${BASH_OPTS}
 
 PULL_REQUEST_URL=$1
 
-WORKFLOW=terraform-apply-all.yml
-
-# gh pr list --assignee=@me --json number,title,headRefName,updatedAt --template \
-#   '{{range .}}{{tablerow .number .title .headRefName (timeago .updatedAt)}}{{end}}' \
-#   | fzf \
-#   | awk '{print $1}'
-
 if [ -z "${PULL_REQUEST_URL}" ]; then
   read -p "Pull request URL for which you'd like to see the plan: " PULL_REQUEST_URL
 fi
@@ -64,12 +57,20 @@ query($number: Int!, $name: String!, $owner: String!, $endCursor: String) {
 
 echo $MODULE_TO_APPLY
 
-# ENV_TO_APPLY=$(cat .github/workflows/${WORKFLOW} \
-# | yq -r '.on.workflow_dispatch.inputs.environment.options | .[]' \
-# | fzf --height ~20% --select-1)
+if [ -f .github/workflows/terraform-apply-all.yml ]; then
+  WORKFLOW=terraform-apply-all.yml
+elif [ -f .github/workflows/terraform-apply.yml ]; then
+  WORKFLOW=terraform-apply.yml
+else
+  echo "Cannot determine which workflow to run"
+  exit 1
+fi
 
-# echo $ENV_TO_APPLY
-
-gh workflow run ${WORKFLOW} --repo ${REPO} --ref ${BRANCH} -f module=${MODULE_TO_APPLY} # -f environment=${ENV_TO_APPLY}
+# Check if workflow needs module as input
+if yq -e '.on.workflow_dispatch.inputs | keys | contains(["module"])' .github/workflows/${WORKFLOW} >/dev/null; then
+  gh workflow run ${WORKFLOW} --repo ${REPO} --ref ${BRANCH} -f module=${MODULE_TO_APPLY}
+else
+  gh workflow run ${WORKFLOW} --repo ${REPO} --ref ${BRANCH}
+fi
 
 gh run list --repo ${REPO} --workflow=${WORKFLOW} --branch ${BRANCH}
