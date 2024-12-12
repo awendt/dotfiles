@@ -2,7 +2,7 @@
 #
 # Summary: Find the ECS task and run a command in in via ECS Exec
 #
-# Usage: {cmd} --cluster NAME --service NAME --command COMMAND
+# Usage: {cmd} --cluster=NAME --service=NAME --command=COMMAND
 #
 # Don't forget to set AWS_PROFILE!
 

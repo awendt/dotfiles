@@ -5,4 +5,4 @@
 #  1. brew tap juanibiapina/homebrew-taps git@github.com:juanibiapina/homebrew-taps.git
 #  2. brew install juanibiapina/homebrew-taps/sub
 
-sub --name sd --bin "${BASH_SOURCE[0]}" --relative ".." -- "$@"
+sub --name sd --executable "${BASH_SOURCE[0]}" --relative ".." -- "$@"

@@ -7,13 +7,7 @@
 BASH_OPTS="-eo pipefail ${DEBUG+-x}"
 set ${BASH_OPTS}
 
-while [[ "$#" -gt 0 ]]; do
-  case $1 in
-    --archived) ARCHIVED=true;;
-    *) echo "Unknown parameter passed: $1"; exit 1 ;;
-  esac
-  shift
-done
+declare -A args="($_SD_ARGS)"
 
 gh search repos \
   --owner $GITHUB_EMPLOYER_ORGS \
@@ -21,7 +15,7 @@ gh search repos \
   --match name \
   --limit 100 \
   --json fullName \
-  --archived=${ARCHIVED-false} \
+  --archived=${args[archived]} \
   infrastructure \
 | jq -r 'map(.fullName) | .[]' \
 | sort

@@ -1,23 +1,15 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Summary: Find out more infos about Lambda deployments
 #
-# Usage: {cmd} [ --repository REPO ] [ --environment ENV ] [ --interval INTERVAL ]
+# Usage: {cmd} --repository=REPO --environment=ENV [ --interval=INTERVAL ]
 
 BASH_OPTS="-eo pipefail ${DEBUG+-x}"
 set ${BASH_OPTS}
 
-while [[ "$#" -gt 0 ]]; do
-  case $1 in
-    --environment) environment=$2; shift ;;
-    --interval) interval=$2; shift ;;
-    --repository) repository=$2; shift ;;
-    *) echo "Unknown parameter passed: $1"; exit 1 ;;
-  esac
-  shift
-done
+declare -A args="($_SD_ARGS)"
 
-TAG_FILTERS=$(jq -nc --arg repository $repository --arg environment $environment '[{Key: "repository", Values: [$repository]}, {Key: "env", Values: [$environment]}]')
+TAG_FILTERS=$(jq -nc --arg repository "${args[repository]}" --arg environment "${args[environment]}" '[{Key: "repository", Values: [$repository]}, {Key: "env", Values: [$environment]}]')
 
 while true; do
   aws resourcegroupstaggingapi get-resources --resource-type-filters lambda --tag-filters ${TAG_FILTERS} \

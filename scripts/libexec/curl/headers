@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+#
+# Summary: List headers from a URL as JSON
+#
+# Usage: {cmd} <url>
+
+declare -A args="($_SD_ARGS)"
+
+curl --silent -w '%{header_json}' -o /dev/null ${args[url]}

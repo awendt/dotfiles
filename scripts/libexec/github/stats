@@ -1,15 +1,14 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Summary: Summarize all pull requests assigned to me over a period of time.
 #
-# Usage: {cmd} [--filter FILTER] [--since TIME]
+# Usage: {cmd} [ --since=TIME ]
 #
-#  --filter Filters certain usernames
 #  --since Shows summary since TIME. Defaults to Monday this week.
 #
 # By default, it outputs # of PRs and a list of all Github users that have created those PRs:
 #
-#   $ githubstats.sh
+#   $ {cmd}
 #   4 pull requests:
 #   {
 #     "awendt": 1,
@@ -19,27 +18,13 @@
 # It reports since Monday by default, but you can optionally
 # pass a timestamp in the given format:
 #
-#   $ githubstats.sh --since 2021-02-01T00:00:00
+#   $ {cmd} --since 2021-02-01T00:00:00
 #
-# You can also filter certain usernames:
-#
-#   $ githubstats.sh --filter awendt
-#   4 pull requests:
-#   {
-#     "awendt": 1
-#   }
-#
-# Don't forget to quote when dealing with weird usernames:
-#
-#   $ githubstats.sh --filter 'awendt,"dependabot[bot]"'
-#   4 pull requests:
-#   {
-#     "awendt": 1,
-#     "dependabot[bot]": 3
-#   }
 
-# By default, don't filter anything
-filter=. # jq's identity function
+BASH_OPTS="-eo pipefail ${DEBUG+-x}"
+set ${BASH_OPTS}
+
+declare -A args="($_SD_ARGS)"
 
 # By default, get pull requests since Monday morning
 # * -v is macOS-specific
@@ -47,16 +32,7 @@ filter=. # jq's identity function
 # * zero hours, minutes, and seconds
 since=`date -v 1w -v 0H -v 0M -v 0S +%FT%T`
 
-while [[ "$#" -gt 0 ]]; do
-  case $1 in
-    --filter) filter="{$2}"; shift ;;
-    --since) since=$2; shift ;;
-    *) echo "Unknown parameter passed: $1"; exit 1 ;;
-  esac
-  shift
-done
-
-ALL_PRS=`gh search prs is:pr --owner ${GITHUB_EMPLOYER_ORGS} --merged --assignee @me --limit=100 --merged-at ">${since}" --json repository,url,title,author`
+ALL_PRS=`gh search prs is:pr --owner ${GITHUB_EMPLOYER_ORGS} --merged --assignee @me --limit=100 --merged-at ">${args[since]-$since}" --json repository,url,title,author`
 
 echo `echo ${ALL_PRS} | jq length` pull requests since ${since}
 
@@ -65,5 +41,4 @@ echo ${ALL_PRS} | jq "
   | group_by(.from)
   | map({ key: .[0].from, value: length })
   | from_entries
-  | ${filter}
 "
