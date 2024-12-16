@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+#
+# Summary: Interactively collects inputs for given workflow.
+#
+# Usage: {cmd} <workflow>
+#
+# This command iterates through all required inputs with choices
+# and prompts for each of them.
+#
+# It outputs JSON so it can be piped straight to `gh workflow run`.
+
+BASH_OPTS="-eo pipefail ${DEBUG+-x}"
+set ${BASH_OPTS}
+
+declare -A args="($_SD_ARGS)"
+
+# Iterate over workflow inputs
+declare -A inputs=()
+
+if [ ! -f "${args[workflow]}" ]; then
+  echo "File ${args[workflow]} does not exist"
+  exit 1
+fi
+
+for input in $(yq -r '.on.workflow_dispatch.inputs | map_values(select(.required == true and .type == "choice")) | keys | .[]' ${args[workflow]}); do
+  case "${input}" in
+    *)
+      inputs["${input}"]=$(yq -r ".on.workflow_dispatch.inputs.${input}.options | .[]" ${args[workflow]} | fzf --prompt="Choose a value for ${input}> " --height ~20% --select-1)
+      ;;
+  esac
+done
+
+for key in "${!inputs[@]}"
+do
+  echo "${key}"
+  echo "${inputs[$key]}"
+done \
+| jq -n -R 'reduce inputs as $i ({}; . + { ($i): (input|(tonumber? // .)) })'

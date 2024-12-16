@@ -66,28 +66,8 @@ else
   exit 1
 fi
 
-# Iterate over workflow inputs
-declare -A inputs=()
-
-for input in $(yq -r '.on.workflow_dispatch.inputs | map_values(select(.required == true)) | keys | .[]' .github/workflows/${WORKFLOW}); do
-  case "${input}" in
-    module)
-      inputs[module]=${MODULE_TO_APPLY}
-      ;;
-    *)
-      echo "Choose a value for ${input}:"
-      inputs["${input}"]=$(yq -r ".on.workflow_dispatch.inputs.${input}.options | .[]" .github/workflows/${WORKFLOW} | fzf --height ~20% --select-1)
-      echo ${inputs["${input}"]}
-      ;;
-  esac
-done
-
-for key in "${!inputs[@]}"
-do
-  echo "${key}"
-  echo "${inputs[$key]}"
-done \
-| jq -n -R 'reduce inputs as $i ({}; . + { ($i): (input|(tonumber? // .)) })' \
+sd github workflow inputs .github/workflows/${WORKFLOW} \
+| jq --arg module $MODULE_TO_APPLY '. + { $module }' \
 | tee ${DEBUG+/dev/stderr} \
 | gh workflow run ${WORKFLOW} --repo ${REPO} --ref ${BRANCH} --json
 
