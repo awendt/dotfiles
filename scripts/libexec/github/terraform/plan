@@ -35,8 +35,6 @@ PR_NUMBER=$(echo ${INFO} | jq -r .number)
 OWNER=$(echo ${INFO} | jq -r .owner)
 REPO_WITHOUT_OWNER=$(echo ${INFO} | jq -r .repository)
 
-echo Choose a module to apply:
-
 MODULE_TO_APPLY=$(gh api graphql --paginate -F name="${REPO_WITHOUT_OWNER}" -F owner="${OWNER}" -F number="${PR_NUMBER}" -f query='
 query($number: Int!, $name: String!, $owner: String!, $endCursor: String) {
   repository(owner: $owner, name: $name) {
@@ -53,9 +51,7 @@ query($number: Int!, $name: String!, $owner: String!, $endCursor: String) {
 }' \
 | jq -r '.data.repository.pullRequest.projectsV2.nodes | map(.title) | .[]' \
 | sort \
-| fzf --height ~20% --select-1)
-
-echo $MODULE_TO_APPLY
+| fzf --height ~20% --select-1 --prompt="Choose a module to apply> ")
 
 if [ -f .github/workflows/terraform-apply-all.yml ]; then
   WORKFLOW=terraform-apply-all.yml
@@ -68,7 +64,7 @@ fi
 
 sd github workflow inputs .github/workflows/${WORKFLOW} \
 | jq --arg module $MODULE_TO_APPLY '. + { $module }' \
-| tee ${DEBUG+/dev/stderr} \
+| tee /dev/stderr \
 | gh workflow run ${WORKFLOW} --repo ${REPO} --ref ${BRANCH} --json
 
 gh run list --repo ${REPO} --workflow=${WORKFLOW} --branch ${BRANCH}
