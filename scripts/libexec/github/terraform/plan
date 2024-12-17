@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
-# Summary: TBD
+# Summary: Start a Terraform plan via workflow run
+# by collecting all input
 #
 # Usage: {cmd} [pull-request-url]
 
@@ -35,21 +36,8 @@ PR_NUMBER=$(echo ${INFO} | jq -r .number)
 OWNER=$(echo ${INFO} | jq -r .owner)
 REPO_WITHOUT_OWNER=$(echo ${INFO} | jq -r .repository)
 
-MODULE_TO_APPLY=$(gh api graphql --paginate -F name="${REPO_WITHOUT_OWNER}" -F owner="${OWNER}" -F number="${PR_NUMBER}" -f query='
-query($number: Int!, $name: String!, $owner: String!, $endCursor: String) {
-  repository(owner: $owner, name: $name) {
-    pullRequest(number: $number) {
-      projectsV2(first: 100, after: $endCursor) {
-        nodes {
-          id
-          number
-          title
-        }
-      }
-    }
-  }
-}' \
-| jq -r '.data.repository.pullRequest.projectsV2.nodes | map(.title) | .[]' \
+MODULE_TO_APPLY=$(sd github projects --owner "${OWNER}" --repo "${REPO_WITHOUT_OWNER}" --pull-number "${PR_NUMBER}" \
+| jq -r 'map(.title) | .[]' \
 | sort \
 | fzf --height ~20% --select-1 --prompt="Choose a module to apply> ")
 
