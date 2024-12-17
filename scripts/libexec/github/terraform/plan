@@ -60,6 +60,6 @@ fi
 sd github workflow inputs .github/workflows/${WORKFLOW} \
 | jq --arg module $MODULE_TO_APPLY '. + { $module }' \
 | tee /dev/stderr \
-| [ "${args[dry-run]}" == "false" ] && gh workflow run ${WORKFLOW} --repo ${REPO} --ref ${BRANCH} --json
+| ( [ "${args[dry-run]}" == "false" ] && gh workflow run ${WORKFLOW} --repo ${REPO} --ref ${BRANCH} --json )
 
 gh run list --repo ${REPO} --workflow=${WORKFLOW} --branch ${BRANCH}
