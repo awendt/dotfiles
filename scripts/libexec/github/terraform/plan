@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 #
-# Summary: Start a Terraform plan via workflow run
-# by collecting all input
+# Summary: Start a Terraform plan via workflow run by collecting all input
 #
-# Usage: {cmd} [pull-request-url]
+# Usage: {cmd} [ --dry-run ] [ pull-request-url ]
 
 BASH_OPTS="-eo pipefail ${DEBUG+-x}"
 set ${BASH_OPTS}
 
-PULL_REQUEST_URL=$1
+declare -A args="($_SD_ARGS)"
+
+PULL_REQUEST_URL=${args[pull-request-url]}
 
 if [ -z "${PULL_REQUEST_URL}" ]; then
   read -p "Pull request URL for which you'd like to see the plan: " PULL_REQUEST_URL
@@ -60,6 +61,6 @@ fi
 sd github workflow inputs .github/workflows/${WORKFLOW} \
 | jq --arg module $MODULE_TO_APPLY '. + { $module }' \
 | tee /dev/stderr \
-| gh workflow run ${WORKFLOW} --repo ${REPO} --ref ${BRANCH} --json
+| [ "${args[dry-run]}" == "false" ] && gh workflow run ${WORKFLOW} --repo ${REPO} --ref ${BRANCH} --json
 
 gh run list --repo ${REPO} --workflow=${WORKFLOW} --branch ${BRANCH}
