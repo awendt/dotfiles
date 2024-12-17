@@ -42,9 +42,8 @@ gh pr checkout ${PULL_REQUEST_URL}
 # Fetch projects for this PR:
 PR_NUMBER=$(echo ${INFO} | jq -r .number)
 OWNER=$(echo ${INFO} | jq -r .owner)
-REPO_WITHOUT_OWNER=$(echo ${INFO} | jq -r .repository)
 
-MODULE_TO_APPLY=$(sd github projects --owner "${OWNER}" --repo "${REPO_WITHOUT_OWNER}" --pull-number "${PR_NUMBER}" \
+MODULE_TO_APPLY=$(sd github projects --owner "${OWNER}" --repo "${REPOSITORY}" --pull-number "${PR_NUMBER}" \
 | jq -r 'map(.title) | .[]' \
 | sort \
 | fzf --height ~20% --select-1 --prompt="Choose a module to apply> ")
