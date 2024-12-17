@@ -13,9 +13,16 @@ PULL_REQUEST_URL=$1
 if [ -z "${PULL_REQUEST_URL}" ]; then
   read -p "Pull request URL for which you'd like to see the plan: " PULL_REQUEST_URL
 fi
-REPOSITORY=$(gh pr view --json headRepository --jq '.headRepository.name' ${PULL_REQUEST_URL})
 
-INFO=$(gh pr view ${PULL_REQUEST_URL} --json headRefName,headRepository,headRepositoryOwner,number --jq '{number, repository: .headRepository.name, owner: .headRepositoryOwner.login, branch: .headRefName, repositoryWithOwner: "\(.headRepositoryOwner.login)/\(.headRepository.name)"}')
+INFO=$(gh pr view ${PULL_REQUEST_URL} --json headRefName,headRepository,headRepositoryOwner,number --jq '
+  {
+    number,
+    repository: .headRepository.name,
+    owner: .headRepositoryOwner.login,
+    branch: .headRefName,
+    repositoryWithOwner: "\(.headRepositoryOwner.login)/\(.headRepository.name)"
+  }')
+REPOSITORY=$(echo ${INFO} | jq -r .repository)
 BRANCH=$(echo ${INFO} | jq -r .branch)
 REPO=$(echo ${INFO} | jq -r .repositoryWithOwner)
 
