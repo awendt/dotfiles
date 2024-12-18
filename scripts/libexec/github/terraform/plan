@@ -15,19 +15,13 @@ if [ -z "${PULL_REQUEST_URL}" ]; then
   read -p "Pull request URL for which you'd like to see the plan: " PULL_REQUEST_URL
 fi
 
-INFO=$(gh pr view ${PULL_REQUEST_URL} --json headRefName,headRepository,headRepositoryOwner,number --jq '
-  {
-    number,
-    repository: .headRepository.name,
-    owner: .headRepositoryOwner.login,
-    branch: .headRefName,
-    repositoryWithOwner: "\(.headRepositoryOwner.login)/\(.headRepository.name)"
-  }')
-REPOSITORY=$(echo ${INFO} | jq -r .repository)
-BRANCH=$(echo ${INFO} | jq -r .branch)
-REPO=$(echo ${INFO} | jq -r .repositoryWithOwner)
+PR_JSON=$(gh pr view ${PULL_REQUEST_URL} --json headRefName,headRepository,headRepositoryOwner,number)
 
-echo We\'re talking about branch: ${BRANCH} in repo ${REPO}
+read -r PR_NUMBER REPOSITORY OWNER BRANCH < <(echo $PR_JSON | jq -r '
+  [.number, .headRepository.name, .headRepositoryOwner.login, .headRefName] | join(" ")
+')
+
+echo "We're talking about branch: ${BRANCH} in repo ${REPO}"
 
 WORKDIR=~/work/${REPOSITORY}
 
@@ -40,9 +34,6 @@ gh pr checkout ${PULL_REQUEST_URL}
 # Trigger a plan
 #################
 # Fetch projects for this PR:
-PR_NUMBER=$(echo ${INFO} | jq -r .number)
-OWNER=$(echo ${INFO} | jq -r .owner)
-
 MODULE_TO_APPLY=$(sd github projects --owner "${OWNER}" --repo "${REPOSITORY}" --pull-number "${PR_NUMBER}" \
 | jq -r 'map(.title) | .[]' \
 | sort \
@@ -60,6 +51,6 @@ fi
 sd github workflow inputs .github/workflows/${WORKFLOW} \
 | jq --arg module $MODULE_TO_APPLY '. + { $module }' \
 | tee /dev/stderr \
-| ( [ "${args[dry-run]}" == "false" ] && gh workflow run ${WORKFLOW} --repo ${REPO} --ref ${BRANCH} --json )
+| ( [ "${args[dry-run]}" == "false" ] && gh workflow run ${WORKFLOW} --repo "${OWNER}/${REPOSITORY}" --ref ${BRANCH} --json )
 
-gh run list --repo ${REPO} --workflow=${WORKFLOW} --branch ${BRANCH}
+gh run list --repo "${OWNER}/${REPOSITORY}" --workflow=${WORKFLOW} --branch ${BRANCH}
