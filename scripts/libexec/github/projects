@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+#
+# Summary: List projects that a pull request is associated with, as JSON.
+#
+# Usage: {cmd} --owner=OWNER --repo=REPO --pull-number=NUMBER
+
+BASH_OPTS="-eo pipefail ${DEBUG+-x}"
+set ${BASH_OPTS}
+
+declare -A args="($_SD_ARGS)"
+
+gh api graphql --paginate -F name="${args[repo]}" -F owner="${args[owner]}" -F number="${args[pull-number]}" -f query='
+query($number: Int!, $name: String!, $owner: String!, $endCursor: String) {
+  repository(owner: $owner, name: $name) {
+    pullRequest(number: $number) {
+      projectsV2(first: 100, after: $endCursor) {
+        nodes {
+          id
+          number
+          title
+        }
+      }
+    }
+  }
+}' \
+| jq .data.repository.pullRequest.projectsV2.nodes
