@@ -22,6 +22,15 @@ if [ ! -f "${args[workflow]}" ]; then
   exit 1
 fi
 
+# Find all input keys in workflow
+VALID_KEYS=$(yq -c '.on.workflow_dispatch.inputs | keys' ${args[workflow]})
+# Filter input
+if test ! -t 0; then # Check for piped input: https://unix.stackexchange.com/a/484643/79243
+  FILTERED_INPUT=$(cat - | jq -c --argjson keys ${VALID_KEYS} 'with_entries(select([.key] | inside($keys)))')
+else
+  FILTERED_INPUT={}
+fi
+
 for input in $(yq -r '.on.workflow_dispatch.inputs | map_values(select(.required == true and .type == "choice")) | keys | .[]' ${args[workflow]}); do
   case "${input}" in
     *)
@@ -35,4 +44,4 @@ do
   echo "${key}"
   echo "${inputs[$key]}"
 done \
-| jq -n -R 'reduce inputs as $i ({}; . + { ($i): (input|(tonumber? // .)) })'
+| jq -n -R --argjson filteredInput ${FILTERED_INPUT} '$filteredInput + reduce inputs as $i ({}; . + { ($i): (input|(tonumber? // .)) })'

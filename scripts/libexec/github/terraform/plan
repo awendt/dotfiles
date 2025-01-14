@@ -48,8 +48,8 @@ else
   exit 1
 fi
 
-sd github workflow inputs .github/workflows/${WORKFLOW} \
-| jq --arg module $MODULE_TO_APPLY '. + { $module }' \
+jq -n -c --arg module $MODULE_TO_APPLY '{ $module }' \
+| sd github workflow inputs .github/workflows/${WORKFLOW} \
 | tee /dev/stderr \
 | ( [ "${args[dry-run]}" == "false" ] && gh workflow run ${WORKFLOW} --repo "${OWNER}/${REPOSITORY}" --ref ${BRANCH} --json )
 
