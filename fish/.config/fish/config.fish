@@ -1,11 +1,10 @@
-set PATH /opt/homebrew/bin /opt/homebrew/sbin $HOME/.rbenv/shims $HOME/.bin $PATH
+set PATH /opt/homebrew/bin /opt/homebrew/sbin $HOME/.rbenv/shims $HOME/.bin $HOME/dotfiles/scripts/bin $PATH
 set INFOPATH /opt/homebrew/share/info $INFOPATH
 set HOMEBREW_PREFIX /opt/homebrew
 set HOMEBREW_CELLAR /opt/homebrew/Cellar
 
 alias unset 'set --erase'
 alias cat='bat --theme="Solarized (light)"'
-alias sd='~/dotfiles/scripts/bin/sd'
 alias node18='/usr/local/opt/node@18/bin/node'
 
 status --is-interactive; and source (rbenv init -|psub)
