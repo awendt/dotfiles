@@ -29,6 +29,7 @@ echo "Going to ${WORKDIR}"
 
 cd ${WORKDIR}
 gh pr checkout ${PULL_REQUEST_URL}
+gh pr update-branch
 
 #################
 # Trigger a plan
