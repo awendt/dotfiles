@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+#
+# Summary: Start a Terraform plan via workflow run by collecting all input
+#
+# Usage: {cmd} [ --dry-run ] [ pull-request-url ]
+
+BASH_OPTS="-eo pipefail ${DEBUG+-x}"
+set ${BASH_OPTS}
+
+declare -A args="($_SD_ARGS)"
+
+PULL_REQUEST_URL=${args[pull-request-url]}
+
+if [ -z "${PULL_REQUEST_URL}" ]; then
+  read -p "Pull request URL for which you'd like to see the plan: " PULL_REQUEST_URL
+fi
+
+PR_JSON=$(gh pr view ${PULL_REQUEST_URL} --json headRefName,headRepository,headRepositoryOwner,number)
+
+read -r PR_NUMBER REPOSITORY OWNER BRANCH < <(echo $PR_JSON | jq -r '
+  [.number, .headRepository.name, .headRepositoryOwner.login, .headRefName] | join(" ")
+')
+
+echo "We're talking about branch: ${BRANCH} in repo ${REPO}"
+
+WORKDIR=~/work/${REPOSITORY}
+
+echo "Going to ${WORKDIR}"
+
+cd ${WORKDIR}
+gh pr checkout ${PULL_REQUEST_URL}
+
+#################
+# Trigger a plan
+#################
+# Fetch projects for this PR:
+MODULE_TO_APPLY=$(sd github projects --owner "${OWNER}" --repo "${REPOSITORY}" --pull-number "${PR_NUMBER}" \
+| jq -r 'map(.title) | .[]' \
+| sort \
+| fzf --height ~20% --select-1 --prompt="Choose a module to apply> ")
+
+if [ -f .github/workflows/terraform-apply-all.yml ]; then
+  WORKFLOW=terraform-apply-all.yml
+elif [ -f .github/workflows/terraform-apply.yml ]; then
+  WORKFLOW=terraform-apply.yml
+else
+  echo "Cannot determine which workflow to run"
+  exit 1
+fi
+
+jq -n -c --arg module $MODULE_TO_APPLY '{ $module }' \
+| sd github workflow inputs .github/workflows/${WORKFLOW} \
+| tee /dev/stderr \
+| ( [ "${args[dry-run]}" == "false" ] && gh workflow run ${WORKFLOW} --repo "${OWNER}/${REPOSITORY}" --ref ${BRANCH} --json )
+
+gh run list --repo "${OWNER}/${REPOSITORY}" --workflow=${WORKFLOW} --branch ${BRANCH}
