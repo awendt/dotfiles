@@ -31,7 +31,7 @@ else
   FILTERED_INPUT={}
 fi
 
-for input in $(yq -r '.on.workflow_dispatch.inputs | map_values(select(.required == true and .type == "choice")) | keys | .[]' ${args[workflow]}); do
+for input in $(yq -r '.on.workflow_dispatch.inputs // {} | map_values(select(.required == true and .type == "choice")) | keys | .[]' ${args[workflow]}); do
   case "${input}" in
     *)
       inputs["${input}"]=$(yq -r ".on.workflow_dispatch.inputs.${input}.options | .[]" ${args[workflow]} | fzf --prompt="Choose a value for ${input}> " --height ~20% --select-1)
