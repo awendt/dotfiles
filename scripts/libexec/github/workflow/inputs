@@ -23,7 +23,7 @@ if [ ! -f "${args[workflow]}" ]; then
 fi
 
 # Find all input keys in workflow
-VALID_KEYS=$(yq -c '.on.workflow_dispatch.inputs | keys' ${args[workflow]})
+VALID_KEYS=$(yq -c '.on.workflow_dispatch.inputs // {} | keys' ${args[workflow]})
 # Filter input
 if test ! -t 0; then # Check for piped input: https://unix.stackexchange.com/a/484643/79243
   FILTERED_INPUT=$(cat - | jq -c --argjson keys ${VALID_KEYS} 'with_entries(select([.key] | inside($keys)))')
