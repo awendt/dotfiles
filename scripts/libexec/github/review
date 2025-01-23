@@ -2,7 +2,7 @@
 #
 # Summary: Bulk-review pull requests
 #
-# Usage: {cmd} <pull-numbers-or-urls>
+# Usage: {cmd} [pull-numbers-or-urls]...
 #
 # Takes a set of pull request numbers or pull request URLs
 # and shows their diff, asking for approval.
