@@ -21,7 +21,7 @@ read -r PR_NUMBER REPOSITORY OWNER BRANCH < <(echo $PR_JSON | jq -r '
   [.number, .headRepository.name, .headRepositoryOwner.login, .headRefName] | join(" ")
 ')
 
-echo "We're talking about branch: ${BRANCH} in repo ${REPO}"
+echo "We're talking about branch: ${BRANCH} in repo ${REPOSITORY}"
 
 WORKDIR=~/work/${REPOSITORY}
 
