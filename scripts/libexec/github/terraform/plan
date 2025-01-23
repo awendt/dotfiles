@@ -2,7 +2,7 @@
 #
 # Summary: Start a Terraform plan via workflow run by collecting all input
 #
-# Usage: {cmd} [ --dry-run ] [ pull-request-url ]
+# Usage: {cmd} [ --dry-run ] [ --revert ] [ pull-request-url ]
 
 BASH_OPTS="-eo pipefail ${DEBUG+-x}"
 set ${BASH_OPTS}
@@ -46,6 +46,11 @@ elif [ -f .github/workflows/terraform-apply.yml ]; then
 else
   echo "Cannot determine which workflow to run"
   exit 1
+fi
+
+if [ "${args[revert]}" == "true" ];
+then
+  BRANCH=$(gh api /repos/${OWNER}/${REPOSITORY} | jq -r .default_branch)
 fi
 
 jq -n -c --arg module $MODULE_TO_APPLY '{ $module }' \
