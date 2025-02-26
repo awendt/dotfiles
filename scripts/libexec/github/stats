@@ -2,9 +2,10 @@
 #
 # Summary: Summarize all pull requests assigned to me over a period of time.
 #
-# Usage: {cmd} [ --since=TIME ]
+# Usage: {cmd} [ --since=TIME ] [ --today ]
 #
 #  --since Shows summary since TIME. Defaults to Monday this week.
+#  --today Shows summary for today.
 #
 # By default, it outputs # of PRs and a list of all Github users that have created those PRs:
 #
@@ -26,11 +27,15 @@ set ${BASH_OPTS}
 
 declare -A args="($_SD_ARGS)"
 
-# By default, get pull requests since Monday morning
-# * -v is macOS-specific
-# * 1w sets weekday to Monday
-# * zero hours, minutes, and seconds
-since=`date -v 1w -v 0H -v 0M -v 0S +%FT%T`
+if [ "${args[today]}" == "true" ]; then
+  since=`date -v 0H -v 0M -v 0S +%FT%T`
+else
+  # By default, get pull requests since Monday morning
+  # * -v is macOS-specific
+  # * 1w sets weekday to Monday
+  # * zero hours, minutes, and seconds
+  since=`date -v 1w -v 0H -v 0M -v 0S +%FT%T`
+fi
 
 ALL_PRS=`gh search prs is:pr --owner ${GITHUB_EMPLOYER_ORGS} --merged --assignee @me --limit=100 --merged-at ">${args[since]-$since}" --json repository,url,title,author`
 
