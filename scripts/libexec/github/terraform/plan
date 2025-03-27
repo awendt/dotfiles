@@ -34,10 +34,10 @@ gh pr checkout ${PULL_REQUEST_URL}
 # Trigger a plan
 #################
 # Fetch projects for this PR:
-MODULE_TO_APPLY=$(sd github projects --owner "${OWNER}" --repo "${REPOSITORY}" --pull-number "${PR_NUMBER}" \
+MODULES_TO_APPLY=($(sd github projects --owner "${OWNER}" --repo "${REPOSITORY}" --pull-number "${PR_NUMBER}" \
 | jq -r 'map(.title) | .[]' \
 | sort \
-| fzf --height ~20% --select-1 --prompt="Choose a module to apply> ")
+| fzf --height ~20% --select-1 --multi --prompt="Choose a module to apply> "))
 
 if [ -f .github/workflows/terraform-apply-all.yml ]; then
   WORKFLOW=terraform-apply-all.yml
@@ -53,9 +53,12 @@ then
   BRANCH=$(gh api /repos/${OWNER}/${REPOSITORY} | jq -r .default_branch)
 fi
 
-jq -n -c --arg module $MODULE_TO_APPLY '{ $module }' \
-| sd github workflow inputs .github/workflows/${WORKFLOW} \
-| tee /dev/stderr \
-| ( [ "${args[dry-run]}" == "false" ] && gh workflow run ${WORKFLOW} --repo "${OWNER}/${REPOSITORY}" --ref ${BRANCH} --json )
+for index in "${!MODULES_TO_APPLY[@]}"
+do
+  jq -n -c --arg module ${MODULES_TO_APPLY[${index}]} '{ $module }' \
+    | sd github workflow inputs .github/workflows/${WORKFLOW} \
+    | tee /dev/stderr \
+    | ( [ "${args[dry-run]}" == "false" ] && gh workflow run ${WORKFLOW} --repo "${OWNER}/${REPOSITORY}" --ref ${BRANCH} --json ) || true
+done
 
 gh run list --repo "${OWNER}/${REPOSITORY}" --workflow=${WORKFLOW} --branch ${BRANCH}
