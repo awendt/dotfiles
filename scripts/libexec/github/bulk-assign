@@ -2,7 +2,7 @@
 #
 # Summary: Bulk-assign pull requests to another person
 #
-# Usage: {cmd} --to=USER --comment=COMMENT
+# Usage: {cmd} --to=USER [ --comment=COMMENT ]
 
 BASH_OPTS="-eo pipefail ${DEBUG+-x}"
 set ${BASH_OPTS}
@@ -12,7 +12,16 @@ declare -A args="($_SD_ARGS)"
 TEMP_FILE=$(mktemp)
 echo ${args[comment]} > $TEMP_FILE
 
-gh search prs assignee:@me --state open --limit 100 --json url \
-  | jq -r 'map(.url) | .[]' \
-  | fzf --height 100% --multi --prompt="Choose PRs to assign to ${args[to]}> " --preview='gh pr view {}' \
-  | xargs -n 1 -S1024 -I {} bash -c "gh pr edit {} --add-assignee ${args[to]} --remove-assignee @me && gh pr comment {} --body-file ${TEMP_FILE}" # See https://stackoverflow.com/a/77336067/473467, "xargs: command line cannot be assembled, too long"
+if [ -t 0 ] ; then
+  # Nothing on STDIN
+  gh search prs assignee:@me --state open --limit 100 --json url \
+    | jq -r 'map(.url) | .[]' \
+    | fzf --height 100% --multi --prompt="Choose PRs to assign to ${args[to]}> " --preview='gh pr view {}' \
+    | xargs -n 1 -S1024 -I {} bash -c "gh pr edit {} --add-assignee ${args[to]} --remove-assignee @me && gh pr comment {} --body-file ${TEMP_FILE}" # See https://stackoverflow.com/a/77336067/473467, "xargs: command line cannot be assembled, too long"
+else
+  # Something on STDIN
+  cat /dev/stdin \
+    | jq -r 'map(.url) | .[]' \
+    | fzf --height 100% --multi --prompt="Choose PRs to assign to ${args[to]}> " --preview='gh pr view {}' \
+    | xargs -n 1 -S1024 -I {} bash -c "gh pr edit {} --add-assignee ${args[to]} --remove-assignee @me" # See https://stackoverflow.com/a/77336067/473467, "xargs: command line cannot be assembled, too long"
+fi
