@@ -13,14 +13,21 @@ gh api graphql --paginate -F name="${args[repo]}" -F owner="${args[owner]}" -F n
 query($number: Int!, $name: String!, $owner: String!, $endCursor: String) {
   repository(owner: $owner, name: $name) {
     pullRequest(number: $number) {
-      projectsV2(first: 100, after: $endCursor) {
+      projectItems(first: 100, after: $endCursor) {
         nodes {
-          id
-          number
-          title
+          project {
+            id
+            number
+            title
+          }
+          status: fieldValueByName(name: "Status") {
+            ... on ProjectV2ItemFieldSingleSelectValue {
+              name
+            }
+          }
         }
       }
     }
   }
 }' \
-| jq .data.repository.pullRequest.projectsV2.nodes
+| jq '.data.repository.pullRequest.projectItems.nodes | map(.project + { status: .status.name })'
