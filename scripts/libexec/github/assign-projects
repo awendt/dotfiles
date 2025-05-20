@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+#
+# Summary: Assign a pull request to projects
+#
+# Usage: {cmd} [ pull-request-url ]
+#
+# Example: Assign projects for modules that use resource from the Google provider.
+#
+# $ ag 'resource "google' --files-with-matches | cut -d/ -f 3-4 | uniq | sd github assign-projects
+
+BASH_OPTS="-eo pipefail ${DEBUG+-x}"
+set ${BASH_OPTS}
+
+declare -A args="($_SD_ARGS)"
+
+if [ -t 0 ]; then
+  echo "Expecting target projects (one per line) on stdin"
+  exit 1
+fi
+
+PULL_REQUEST_URL=${args[pull-request-url]}
+
+if [ -z "${PULL_REQUEST_URL}" ]; then
+  # Because we have FD 0 connected to a pipe, we cannot just use read but have to specify TTY.
+  # See https://superuser.com/a/1748559/134305 and https://askubuntu.com/a/1463649/838289 for details
+  read -p "Pull request URL which you'd like to assign projects to: " PULL_REQUEST_URL </dev/tty
+fi
+
+PR_JSON=$(gh pr view ${PULL_REQUEST_URL} --json headRefName,headRepository,headRepositoryOwner,id)
+
+read -r PR_ID REPOSITORY OWNER BRANCH < <(echo $PR_JSON | jq -r '
+  [.id, .headRepository.name, .headRepositoryOwner.login, .headRefName] | join(" ")
+')
+
+TARGET_PROJECTS=$(cat /dev/stdin | jq --raw-input -c -n 'reduce inputs as $i ([]; . + [$i])')
+
+PROJECT_IDS=$(gh api graphql --paginate -F name="${REPOSITORY}" -F owner="${OWNER}" -f query='
+query($name: String!, $owner: String!, $endCursor: String) {
+  repository(owner: $owner, name: $name) {
+    projectsV2(first: 100, after: $endCursor) {
+      nodes {
+        title
+        id
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+      }
+    }
+  }
+}' \
+| jq -s -r \
+  --argjson target_projects "$TARGET_PROJECTS" \
+  '(map(.data.repository.projectsV2.nodes) | flatten | reduce .[] as $item ({}; . + { ($item.title): $item.id })) as $lookup | $target_projects | map($lookup[.]) | .[]'
+)
+
+for PROJECT in ${PROJECT_IDS}; do
+  gh api graphql -F projectId=${PROJECT} -F contentId=${PR_ID} -f query='
+  mutation assignPRtoProject($contentId: ID!, $projectId: ID!) {
+    addProjectV2ItemById(
+      input: {
+        clientMutationId: "foo",
+        contentId: $contentId,
+        projectId: $projectId,
+      }
+    )
+    {
+      item {
+        id
+      }
+    }
+  }
+  '
+done
