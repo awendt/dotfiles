@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+#
+# Summary: Show the rate limit for GitHub's API
+#
+# Usage: {cmd}
+
+BASH_OPTS="-eo pipefail ${DEBUG+-x}"
+set ${BASH_OPTS}
+
+declare -A args="($_SD_ARGS)"
+
+gh api /rate_limit | jq '.rate + { reset: .rate.reset | strftime("%Y-%m-%dT%H:%M:%SZ") }'
