@@ -51,6 +51,8 @@
     path = ~/.gitconfig-work
 [includeIf "gitdir:~/privat/"]
     path = ~/.gitconfig-private
+[includeIf "gitdir:~/dotfiles/"]
+    path = ~/.gitconfig-private
 [stash]
     showPatch = true
 [init]
