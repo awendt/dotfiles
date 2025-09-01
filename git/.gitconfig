@@ -35,7 +35,7 @@
     coi = !git branch --sort=-committerdate --format='%(refname:short)' | head -n 20 | fzf --height 40% | xargs git co
 [core]
     excludesfile = ~/.gitignore
-    pager = /usr/local/share/git-core/contrib/diff-highlight/diff-highlight | less
+    pager = $(brew --prefix git)/share/git-core/contrib/diff-highlight/diff-highlight | less
 [repack]
     usedeltabaseoffset = true
 [svn]
