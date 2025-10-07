@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Script to check modified Ruby files with rubocop, install in any repo with:
+#
+# cd .git/hooks; ln -s ~/dotfiles/scripts/hooks/rubocop/pre-commit
+
+git diff --staged --name-only --diff-filter=ACMR -- '*.rb' '*.rake' | xargs \
+  bundle exec rubocop --force-exclusion --parallel --cache true
