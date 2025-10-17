@@ -3,6 +3,10 @@ set hlsearch
 set list
 set listchars=tab:!·,trail:·
 syntax on
+" Use new regular expression engine to speed up TypeScript syntax highlighting
+" See https://jameschambers.co.uk/vim-typescript-slow/
+set re=0
+
 au BufNewFile,BufRead */.ssh/config.d/*	setf sshconfig
 au FileType gitcommit execute "normal! g"  | startinsert
 execute pathogen#infect()
