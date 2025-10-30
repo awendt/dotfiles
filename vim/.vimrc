@@ -2,6 +2,7 @@ set number
 set hlsearch
 set list
 set listchars=tab:!·,trail:·
+set shiftwidth=2 smarttab
 syntax on
 " Use new regular expression engine to speed up TypeScript syntax highlighting
 " See https://jameschambers.co.uk/vim-typescript-slow/
