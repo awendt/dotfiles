@@ -4,5 +4,8 @@
 #
 # cd .git/hooks; ln -s ~/dotfiles/scripts/hooks/rubocop/pre-commit
 
+set -e
+
 git diff --staged --name-only --diff-filter=ACMR -- '*.rb' '*.rake' | xargs \
   bundle exec rubocop --force-exclusion --parallel --cache true
+git diff --staged --name-only --diff-filter=ACMR -- '*.js' '*.ts' | xargs npx eslint -c .eslintrc.local.json
