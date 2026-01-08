@@ -1,0 +1,11 @@
+# ~/.tmuxinator/cleanup-notifications.yml
+
+name: cleanup-notifications
+root: ~/privat/gh-cleanup-notifications/
+
+windows:
+  - cleanup-notifications:
+      layout: even-horizontal
+      panes:
+        - gh cleanup-notifications --config-file=podigee.json --verbose | ts
+        - clear # empty, just plain bash
