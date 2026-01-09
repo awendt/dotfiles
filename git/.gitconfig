@@ -33,6 +33,7 @@
     backmerge = "!git fetch origin && git merge --no-edit -m \"Merge branch '$1' into $(git branch --show-current)\" origin/$1"
     root = rev-parse --show-toplevel
     coi = !git branch --sort=-committerdate --format='%(refname:short)' | head -n 20 | fzf --height 40% | xargs git co
+    trace = log --no-textconv -S
 [core]
     excludesfile = ~/.gitignore
     pager = $(brew --prefix git)/share/git-core/contrib/diff-highlight/diff-highlight | less
