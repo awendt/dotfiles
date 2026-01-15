@@ -7,5 +7,5 @@ windows:
   - cleanup-notifications:
       layout: even-horizontal
       panes:
-        - gh cleanup-notifications --config-file=podigee.json --verbose | ts
+        - gh cleanup-notifications --config-file=podigee.json --verbose --cleanup-closed-prs | ts
         - clear # empty, just plain bash
