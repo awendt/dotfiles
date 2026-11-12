@@ -1,0 +1,23 @@
+#!/bin/sh
+# pane-share: hand text to Claude only when you choose to, with secrets masked.
+# Usage: pane-share <tmux-target>   share the pane's visible screen
+# Each share is saved to ~/.claude-share/<time>.txt and its path appended to
+# ~/.claude-share/inbox, which Claude watches with: tail -n0 -F ~/.claude-share/inbox
+dir=$HOME/.claude-share
+mkdir -p "$dir" && chmod 700 "$dir"
+find "$dir" -name '*.txt' -mtime +1 -delete   # keep only the last 24h of shares
+f=$dir/$(date +%Y%m%d-%H%M%S)-$$.txt
+
+tmux capture-pane -p -J -t "${1:?usage: pane-share <tmux-target>}" | perl -0pe '
+  s/-----BEGIN [A-Z ]*PRIVATE KEY-----.*?-----END [A-Z ]*PRIVATE KEY-----/[REDACTED PRIVATE KEY]/gs;
+  s/(Bearer\s+)\S+/${1}[REDACTED]/gi;
+  s/((?:pass(?:word|wd)?|secret|token|api[_-]?key|auth)\w*\s*[=:]\s*["\x27]?)[^\s"\x27]+/${1}[REDACTED]/gi;
+  s/(:\/\/[^\/\s:@]+:)[^@\s]+@/${1}[REDACTED]@/g;
+  s/\b(AKIA|ASIA)[A-Z0-9]{16}\b/[REDACTED AWS KEY]/g;
+  s/\b(gh[pousr]_[A-Za-z0-9]{36,}|github_pat_\w{20,}|sk-[A-Za-z0-9_-]{20,}|xox[abpr]-[\w-]+)\b/[REDACTED TOKEN]/g;
+' > "$f" || exit 1
+
+[ "$(wc -l < "$dir/inbox" 2>/dev/null || echo 0)" -ge 1000 ] && : > "$dir/inbox"   # reset, never trim: trimming replays lines to tail -F
+echo "$f" >> "$dir/inbox"
+tmux display-message "Shared with Claude ($(wc -l < "$f" | tr -d ' ') lines)" 2>/dev/null
+true

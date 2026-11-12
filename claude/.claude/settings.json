@@ -1,0 +1,55 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ag:*)",
+      "Bash(awk:*)",
+      "Bash(bin/rails routes)",
+      "Bash(bundle exec rubocop:*)",
+      "Bash(bundle exec rspec:*)",
+      "Bash(cat > /tmp/*)",
+      "Bash(find:*)",
+      "Bash(gh auth status:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr diff:*)",
+      "Bash(gh pr checks:*)",
+      "Bash(gh repo view:*)",
+      "Bash(git add *)",
+      "Bash(git add .*)",
+      "Bash(git add -u*)",
+      "Bash(git checkout -b *)",
+      "Bash(git fetch:*)",
+      "Bash(git log:*)",
+      "Bash(git reflog:*)",
+      "Bash(git show:*)",
+      "Bash(git trace:*)",
+      "Bash(grep:*)",
+      "Bash(jq:*)",
+      "Bash(ls:*)",
+      "Bash(yarn herb:lint:*)",
+      "Bash(yarn herb:format:*)",
+      "mcp__claude_ai_Notion__notion-fetch",
+      "mcp__claude_ai_Notion__notion-query-database-view",
+      "mcp__claude_ai_Notion__notion-get-users",
+      "mcp__claude_ai_Notion__notion-update-page",
+      "Read(~/.claude-share/**)"
+    ],
+    "deny": [
+      "Bash(tmux capture-pane:*)",
+      "Bash(tmux capturep:*)",
+      "Bash(tmux send-keys:*)",
+      "Bash(tmux send:*)"
+    ]
+  },
+  "enabledPlugins": {
+    "notion@claude-plugins-official": true
+  },
+  "theme": "light-ansi",
+  "extraKnownMarketplaces": {
+    "ponytail": {
+      "source": {
+        "source": "github",
+        "repo": "DietrichGebert/ponytail"
+      }
+    }
+  }
+}
